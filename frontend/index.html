@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RoofIntel — Account Planning</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root[data-theme="dark"] {
+    --bg: #1c1b19;
+    --bg-card: #242220;
+    --bg-card-hover: #2a2825;
+    --bg-panel: #1f1e1c;
+    --line: #3a3733;
+    --text: #f2efe9;
+    --text-muted: #948f86;
+    --text-dim: #6b665f;
+    --accent-orange: #d6562c;
+    --accent-amber: #c9a227;
+    --accent-blue: #5b7fa6;
+    --grid-line: rgba(255,255,255,0.015);
+  }
+
+  :root[data-theme="light"] {
+    --bg: #f2efe9;
+    --bg-card: #ffffff;
+    --bg-card-hover: #faf7f1;
+    --bg-panel: #ffffff;
+    --line: #ddd6c8;
+    --text: #232017;
+    --text-muted: #7a7468;
+    --text-dim: #a39d8e;
+    --accent-orange: #c4471f;
+    --accent-amber: #a8821a;
+    --accent-blue: #3f5f80;
+    --grid-line: rgba(0,0,0,0.025);
+  }
+
+  :root {
+    --tier-a: var(--accent-orange);
+    --tier-b: var(--accent-amber);
+    --tier-c: var(--accent-blue);
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 28px 40px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .brand-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--accent-orange);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-right { display: flex; align-items: flex-end; gap: 20px; }
+
+  .header-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: right;
+    line-height: 1.6;
+  }
+  .header-meta strong { color: var(--text); }
+
+  .btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  main {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px 40px 80px;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .dashboard-main { min-width: 0; }
+
+  /* ---- Interactive Summary Box Buttons ---- */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .summary-stat {
+    background: var(--bg-card);
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+    user-select: none;
+  }
+  .summary-stat:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--text-muted);
+  }
+  .summary-stat.active {
+    background: var(--bg-card-hover);
+    border-color: var(--text);
+    box-shadow: 0 0 0 1px var(--text);
+  }
+  .summary-stat .num {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    line-height: 1;
+  }
+  .summary-stat .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 10px;
+  }
+  
+  .summary-stat.tier-a.active { border-color: var(--tier-a); box-shadow: 0 0 0 1px var(--tier-a); }
+  .summary-stat.tier-b.active { border-color: var(--tier-b); box-shadow: 0 0 0 1px var(--tier-b); }
+  .summary-stat.tier-c.active { border-color: var(--tier-c); box-shadow: 0 0 0 1px var(--tier-c); }
+  
+  .summary-stat.tier-a .num { color: var(--tier-a); }
+  .summary-stat.tier-b .num { color: var(--tier-b); }
+  .summary-stat.tier-c .num { color: var(--tier-c); }
+
+  /* ---- Dropdown Filter Bar ---- */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 28px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .filter-bar .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  select.filter-input {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+  }
+
+  .filter-clear {
+    margin-left: auto;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  /* ---- Card Content Sections ---- */
+  .tier-section { margin-bottom: 36px; }
+  .tier-section.hidden { display: none; }
+
+  .tier-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tier-section-header .stamp { width: 30px; height: 30px; }
+  .tier-section-header .stamp span { font-size: 13px; }
+  .tier-section-title {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .tier-section-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 20px 18px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-4px);
+    border-color: var(--accent-orange);
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .company-id { display: flex; gap: 12px; align-items: center; }
+
+  .logo-chip {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius);
+    background: var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  .company-name { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.25; }
+  .company-loc { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+
+  .stamp {
+    width: 44px; height: 44px;
+    transform: rotate(45deg);
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stamp span { transform: rotate(-45deg); font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 17px; }
+  .stamp.tier-A { color: var(--tier-a); }
+  .stamp.tier-B { color: var(--tier-b); }
+  .stamp.tier-C { color: var(--tier-c); }
+
+  .meta-row {
+    display: flex; gap: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; color: var(--text-muted);
+    margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .meta-row .star { color: var(--accent-amber); }
+
+  .status-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+  }
+  .status-pill.contacted { color: var(--accent-blue); border-color: var(--accent-blue); }
+  .status-pill.quote_requested { color: var(--accent-orange); border-color: var(--accent-orange); }
+  .status-pill.not_interested { color: var(--text-dim); }
+
+  .certs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .cert-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    color: var(--text-muted);
+  }
+
+  .why-now {
+    font-size: 13px; line-height: 1.5; color: var(--text);
+    border-left: 2px solid var(--accent-orange);
+    padding-left: 12px; margin-bottom: 4px;
+  }
+
+  .card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .phone { font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; color: var(--accent-blue); cursor: pointer; }
+  .phone:hover { text-decoration: underline; }
+  .score-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+
+  /* ---- Modal Detail Overlay ---- */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 20;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    max-width: 560px; width: 100%;
+    max-height: 86vh; overflow-y: auto;
+    padding: 28px;
+  }
+  .modal-close { float: right; background: none; border: none; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; cursor: pointer; }
+  .modal h2 { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 22px; margin-bottom: 4px; }
+  .modal .company-loc { margin-bottom: 18px; }
+  .modal-section { margin-bottom: 18px; }
+  .modal-section h3 { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .modal-section p { font-size: 14px; line-height: 1.6; }
+  .modal-section ul { padding-left: 18px; }
+  .modal-section li { font-size: 14px; line-height: 1.7; }
+
+  .empty, .loading { text-align: center; padding: 60px 20px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+  /* ---- AI Agent Sidebar Module ---- */
+  .agent-sidebar {
+    position: sticky;
+    top: 24px;
+    height: calc(100vh - 160px);
+    max-height: 720px;
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .agent-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-card);
+    flex-shrink: 0;
+  }
+  .agent-header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; color: var(--accent-orange);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .agent-header .title { font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 16px; }
+
+  .agent-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    font-size: 13px;
+  }
+
+  .agent-msg { line-height: 1.5; width: 100%; }
+  .agent-msg.user { display: flex; justify-content: flex-end; }
+  .agent-msg.user .bubble {
+    background: var(--accent-blue); color: #fff;
+    padding: 8px 12px; border-radius: 10px 10px 2px 10px; max-width: 85%;
+  }
+  .agent-msg.assistant { display: flex; justify-content: flex-start; }
+  .agent-msg.assistant .bubble {
+    background: var(--bg-card); border: 1px solid var(--line);
+    padding: 12px; border-radius: 10px 10px 10px 2px; width: 100%;
+  }
+
+  /* ---- Blue Loading State ---- */
+  .agent-msg.thinking-state {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #5b7fa6;
+    background: rgba(91, 127, 166, 0.06);
+    border: 1px solid #5b7fa6;
+    padding: 12px 14px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: pulseGlow 1.4s infinite ease-in-out;
+  }
+  @keyframes pulseGlow {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+  }
+
+  /* ---- Chat Output Grid Cards ---- */
+  .chat-card {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-top: 10px;
+    position: relative;
+    text-align: left;
+  }
+  
+  .chat-card.lead-result { border-left: 3px solid var(--accent-blue); }
+  .chat-card.lead-result.tier-A { border-left-color: var(--tier-a); }
+  .chat-card.lead-result.tier-B { border-left-color: var(--tier-b); }
+  .chat-card.lead-result.tier-C { border-left-color: var(--tier-c); }
+
+  .chat-card-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent-blue);
+  }
+
+  .chat-card.scoring-breakdown {
+    border-left: 3px solid var(--accent-amber);
+    background: linear-gradient(to right, rgba(201, 162, 39, 0.02), transparent);
+  }
+  .breakdown-factor {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .chat-card.outreach-script { border-left: 3px solid var(--accent-orange); cursor: pointer; }
+  .chat-card.outreach-script:hover { background: var(--bg-card-hover); }
+
+  .chat-card-title {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .chat-card-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .chat-card-body { font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+  
+  .chat-card-script {
+    background: var(--bg-panel);
+    border: 1px solid var(--line);
+    padding: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    margin-top: 8px;
+    white-space: pre-wrap;
+    border-radius: 2px;
+  }
+
+  /* ---- Tactical Suggestion Chips ---- */
+  .agent-suggestions-inline { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .agent-suggestion-chip {
+    text-align: left;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .agent-suggestion-chip:hover {
+    border-color: var(--accent-amber);
+    color: var(--text);
+    background: rgba(201, 162, 39, 0.03);
+    padding-left: 16px;
+  }
+
+  .agent-input-row {
+    border-top: 1px solid var(--line);
+    padding: 12px;
+    display: flex; gap: 8px;
+    background: var(--bg-card);
+    flex-shrink: 0;
+  }
+  .agent-input-row input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    color: var(--text);
+    font-size: 13px;
+  }
+  .agent-input-row button {
+    background: var(--accent-orange);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand-eyebrow">ROOFINTEL · SALES INTELLIGENCE</div>
+    <h1>Account Planning Queue</h1>
+  </div>
+  <div class="header-right">
+    <div class="header-meta">
+      SOURCE: GAF RESIDENTIAL CONTRACTOR LOCATOR<br>
+      ZIP <strong>10013</strong> · <strong>25MI</strong> RADIUS · LAST SYNC <strong id="sync-time">--</strong>
+    </div>
+    <button class="btn theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
+  </div>
+</header>
+
+<main>
+  <div class="dashboard-main">
+    <div class="summary-bar" id="summary-bar"></div>
+
+    <div class="filter-bar">
+      <span class="eyebrow">Filter Options</span>
+      <select class="filter-input" id="filter-state">
+        <option value="">All states</option>
+        <option value="NY">NY</option>
+        <option value="NJ">NJ</option>
+      </select>
+      <select class="filter-input" id="filter-rating">
+        <option value="">Any rating</option>
+        <option value="4.8">4.8+ ★</option>
+        <option value="4.5">4.5+ ★</option>
+        <option value="4.0">4.0+ ★</option>
+      </select>
+      <select class="filter-input" id="filter-cert">
+        <option value="">Any certification</option>
+        <option value="President's Club Award">President's Club</option>
+        <option value="GAF Master Elite">Master Elite</option>
+        <option value="GAF Certified Plus">Certified Plus</option>
+        <option value="GAF Certified">Certified</option>
+      </select>
+      <button class="filter-clear" id="filter-clear">Clear filters</button>
+    </div>
+
+    <div id="sections"></div>
+  </div>
+
+  <aside class="agent-sidebar">
+    <div class="agent-header">
+      <div class="eyebrow">InstaWorker</div>
+      <div class="title">AI Sales Teammate</div>
+    </div>
+    <div class="agent-messages" id="agent-messages"></div>
+    <div class="agent-input-row">
+      <input type="text" id="agent-input" placeholder="Ask about your leads…" />
+      <button id="agent-send">Send</button>
+    </div>
+  </aside>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script type="module">
+  const API_BASE = "http://localhost:8000";
+  const tierLabel = { A: "A", B: "B", C: "C" };
+  const tierNames = { A: "Tier A — Call Today", B: "Tier B — This Week", C: "Tier C — Monitor" };
+
+  let allLeads = [];
+  let activeTier = null; 
+
+  /* ---------------- Clipboard Toast Component ---------------- */
+  function showToast(message) {
+    let toast = document.createElement("div");
+    toast.className = "mono";
+    toast.style = `
+      position: fixed; bottom: 24px; left: 24px; 
+      background: var(--accent-orange); color: #fff; 
+      padding: 12px 18px; border-radius: 3px; 
+      font-size: 11.5px; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      letter-spacing: 0.02em; border: 1px solid rgba(255,255,255,0.1);
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  /* ---------------- Global Intercept Click Actions ---------------- */
+  document.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("phone")) {
+      navigator.clipboard.writeText(e.target.textContent.trim());
+      showToast("📞 Phone number copied to clipboard.");
+    }
+    if (e.target.closest(".chat-card-script")) {
+      const scriptBox = e.target.closest(".chat-card-script");
+      navigator.clipboard.writeText(scriptBox.textContent.replace(/^"|"$/g, ''));
+      showToast("📋 Action outreach copy saved to clipboard.");
+    }
+    if (e.target.classList.contains("dynamic-regen")) {
+      e.stopPropagation();
+      const id = e.target.dataset.id;
+      e.target.textContent = "SYNCHRONIZING...";
+      try {
+        const res = await fetch(`${API_BASE}/leads/${id}/regenerate-insight`, { method: "POST" });
+        if (res.ok) {
+          await loadLeads();
+          showToast("✨ Live AI reasoning matrix updated.");
+        }
+      } catch (err) {
+        e.target.textContent = "REGENERATE MATRIX ↻";
+      }
+    }
+  });
+
+  /* ---------------- Data Loader ---------------- */
+  async function loadLeads() {
+    const params = new URLSearchParams();
+    const state = document.getElementById("filter-state").value;
+    const rating = document.getElementById("filter-rating").value;
+    const cert = document.getElementById("filter-cert").value;
+    if (state) params.set("state", state);
+    if (rating) params.set("min_rating", rating);
+    if (cert) params.set("certification", cert);
+
+    try {
+      const res = await fetch(`${API_BASE}/leads?${params.toString()}`);
+      if (!res.ok) throw new Error("API failure");
+      allLeads = await res.json();
+      renderSummary(allLeads);
+      renderSections();
+      document.getElementById("sync-time").textContent =
+        new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    } catch (err) {
+      document.getElementById("sections").innerHTML = `<div class="empty">Backend server offline at port 8000.</div>`;
+    }
+  }
+
+  ["filter-state", "filter-rating", "filter-cert"].forEach(id => {
+    document.getElementById(id).addEventListener("change", loadLeads);
+  });
+  document.getElementById("filter-clear").addEventListener("click", () => {
+    document.getElementById("filter-state").value = "";
+    document.getElementById("filter-rating").value = "";
+    document.getElementById("filter-cert").value = "";
+    loadLeads();
+  });
+
+  /* ---------------- High-Accuracy Counter Engine ---------------- */
+  function runCounterAnimation(el, val) {
+    let start = 0;
+    el.textContent = "0";
+    if (val === 0) return;
+    
+    const duration = 200;
+    const stepTime = Math.max(Math.floor(duration / val), 10);
+    
+    const timer = setInterval(() => {
+      start++;
+      el.textContent = start;
+      if (start >= val) {
+        el.textContent = val;
+        clearInterval(timer);
+      }
+    }, stepTime);
+  }
+
+  /* ---------------- Render KPI Buttons ---------------- */
+  function renderSummary(leads) {
+    const counts = { A: 0, B: 0, C: 0 };
+    leads.forEach(l => { if (l.priority_tier) counts[l.priority_tier]++; });
+    const bar = document.getElementById("summary-bar");
+    
+    bar.innerHTML = `
+      <div class="summary-stat ${activeTier === null ? 'active' : ''}" data-tier="all">
+        <div class="num" data-val="${leads.length}">0</div>
+        <div class="label">Total Leads</div>
+      </div>
+      <div class="summary-stat tier-a ${activeTier === 'A' ? 'active' : ''}" data-tier="A">
+        <div class="num" data-val="${counts.A}">0</div>
+        <div class="label">${tierNames.A}</div>
+      </div>
+      <div class="summary-stat tier-b ${activeTier === 'B' ? 'active' : ''}" data-tier="B">
+        <div class="num" data-val="${counts.B}">0</div>
+        <div class="label">${tierNames.B}</div>
+      </div>
+      <div class="summary-stat tier-c ${activeTier === 'C' ? 'active' : ''}" data-tier="C">
+        <div class="num" data-val="${counts.C}">0</div>
+        <div class="label">${tierNames.C}</div>
+      </div>
+    `;
+
+    bar.querySelectorAll(".num").forEach((el) => {
+      runCounterAnimation(el, Number(el.dataset.val));
+    });
+
+    bar.querySelectorAll(".summary-stat").forEach(box => {
+      box.addEventListener("click", () => {
+        const t = box.dataset.tier;
+        activeTier = t === "all" ? null : t;
+        renderSummary(allLeads);
+        renderSections();
+      });
+    });
+  }
+
+  /* ---------------- Sections Rendering ---------------- */
+  function renderSections() {
+    const container = document.getElementById("sections");
+    const tiers = ["A", "B", "C"];
+    container.innerHTML = tiers.map(t => sectionShellHTML(t)).join("");
+
+    tiers.forEach(t => {
+      const sectionEl = document.getElementById(`section-${t}`);
+      if (activeTier !== null && activeTier !== t) {
+        sectionEl.classList.add("hidden");
+      } else {
+        sectionEl.classList.remove("hidden");
+      }
+    });
+
+    tiers.forEach(t => {
+      const leadsInTier = allLeads.filter(l => (l.priority_tier || "C") === t);
+      const grid = document.getElementById(`grid-${t}`);
+      document.getElementById(`count-${t}`).textContent = `${leadsInTier.length} LEAD${leadsInTier.length === 1 ? "" : "S"}`;
+      if (!leadsInTier.length) {
+        grid.innerHTML = `<div class="empty">No leads found matching current filtering bounds.</div>`;
+        return;
+      }
+      grid.innerHTML = leadsInTier.map(cardHTML).join("");
+      
+      leadsInTier.forEach(l => {
+        const card = document.getElementById(`card-${l.id}`);
+        card.addEventListener("click", () => openModal(l));
+      });
+    });
+  }
+
+  function sectionShellHTML(tier) {
+    return `
+      <div class="tier-section" id="section-${tier}">
+        <div class="tier-section-header">
+          <div class="stamp tier-${tier}"><span>${tier}</span></div>
+          <div>
+            <div class="tier-section-title">${tierNames[tier]}</div>
+            <div class="tier-section-sub" id="count-${tier}"></div>
+          </div>
+        </div>
+        <div class="grid" id="grid-${tier}"><div class="loading">Syncing...</div></div>
+      </div>
+    `;
+  }
+
+  function cardHTML(l) {
+    const tier = l.priority_tier || "C";
+    const certs = l.certifications.map(c => `<span class="cert-pill">${c}</span>`).join("");
+    const statusPill = l.status && l.status !== "new" ? `<span class="status-pill ${l.status}">${l.status.replace("_", " ")}</span>` : "";
+    // Inside your cardHTML layout:
+  const nameLower = l.company_name.toLowerCase();
+  const isCommercial = nameLower.includes("commercial") || nameLower.includes("systems") || nameLower.includes("industrial") || nameLower.includes("corp");
+  const segmentBadge = isCommercial 
+    ? `<span class="status-pill contacted" style="border-color: #c9a227; color: #c9a227;">🏢 COMMERCIAL TRUCKLOAD</span>`
+    : `<span class="status-pill" style="border-color: #5b7fa6; color: #5b7fa6;">🏡 RESIDENTIAL JOB</span>`;
+    return `
+      <div class="card" id="card-${l.id}">
+        <div class="card-top">
+          <div class="company-id">
+            <div class="logo-chip">${l.logo_initial}</div>
+            <div>
+              <div class="company-name">${l.company_name}</div>
+              <div class="company-loc">${l.city}, ${l.state} · ${l.distance_miles} MI</div>
+            </div>
+          </div>
+          <div class="stamp tier-${tier}"><span>${tierLabel[tier]}</span></div>
+        </div>
+        <div class="meta-row">
+          <span class="star">★ ${l.rating.toFixed(1)}</span>
+          <span>${l.review_count} reviews</span>
+          <span>SCORE ${l.priority_score ?? "—"}</span>
+          ${statusPill}
+        </div>
+        <div class="certs">${certs}</div>
+        <div class="why-now">${l.why_now || "Insight not generated."}</div>
+        <div class="card-footer">
+          <span class="phone">${l.phone}</span>
+          <span class="score-tag dynamic-regen" data-id="${l.id}" style="cursor:pointer; text-decoration:underline; font-weight:500;">REGENERATE MATRIX ↻</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /* ---------------- Modal Detail Drawer ---------------- */
+  function openModal(l) {
+    const modal = document.getElementById("modal");
+    const overlay = document.getElementById("overlay");
+    const points = (l.talking_points || []).map(p => `<li>${p}</li>`).join("");
+    modal.innerHTML = `
+      <button class="modal-close" id="modal-close-btn">CLOSE ✕</button>
+      <h2>${l.company_name}</h2>
+      <div class="company-loc">${l.city}, ${l.state} ${l.zip} · ${l.distance_miles} mi · ${l.phone}</div>
+      <div class="modal-section"><h3>Why This Lead Now</h3><p>${l.why_now || "—"}</p></div>
+      <div class="modal-section"><h3>Talking Points</h3><ul>${points || "<li>—</li>"}</ul></div>
+      <div class="modal-section"><h3>Recommended Approach</h3><p>${l.approach || "—"}</p></div>
+    `;
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    overlay.classList.add("open");
+  }
+  function closeModal() { document.getElementById("overlay").classList.remove("open"); }
+  document.getElementById("overlay").addEventListener("click", (e) => { if (e.target.id === "overlay") closeModal(); });
+
+  /* ---------------- Chat Engine Integration ---------------- */
+  let agentHistory = [];
+  
+  const SUGGESTIONS = [
+    "⚡ Who should I call first?",
+    "⚡ Draft an outreach phone script for my top-ranked tier A contractor",
+    "⚡ Explain the formula factors for c001 ranking position"
+  ];
+
+  function cleanMarkdownText(text) {
+    if (!text) return "";
+    return text
+      .replace(/\\\((.*?)\\\)/g, '$1') 
+      .replace(/\\\[([\s\S]*?)\\\]/g, '') 
+      .replace(/\*\*(.*?)\*\*/g, '$1')   
+      .replace(/\*(.*?)\*/g, '$1');      
+  }
+
+  function formatAssistantReply(text, toolLogs) {
+    let cleanText = cleanMarkdownText(text);
+    let html = `<div style="margin-bottom: 6px;">${cleanText}</div>`;
+    if (toolLogs && toolLogs.length) {
+      toolLogs.forEach(log => {
+        if (log.tool === "query_leads" && log.result.leads) {
+          // Filter out cards to ONLY show the ones explicitly mentioned in the text response
+          const lowerText = cleanText.toLowerCase();
+          const runningLeads = log.result.leads;
+          
+          // If the text specifically calls out one company, isolate it. Otherwise, show top matches.
+          const matchingLeads = runningLeads.filter(lead => 
+            lowerText.includes(lead.company_name.toLowerCase()) || 
+            lowerText.includes(lead.id.toLowerCase())
+          );
+          
+          const leadsToRender = matchingLeads.length > 0 ? matchingLeads : runningLeads.slice(0, 2);
+
+          leadsToRender.forEach(lead => {
+            const fullMatch = allLeads.find(a => a.id === lead.id) || lead;
+            html += `
+              <div class="chat-card lead-result tier-${fullMatch.priority_tier || 'C'}">
+                <div class="chat-card-title">
+                  <span>${fullMatch.company_name}</span>
+                  <span class="status-pill">${fullMatch.priority_tier || 'C'}</span>
+                </div>
+                <div class="chat-card-meta">SCORE: ${fullMatch.priority_score ?? '—'} · RATING: ★ ${fullMatch.rating} (${fullMatch.review_count ?? '0'} reviews)</div>
+                <div class="chat-card-body">${fullMatch.city}, ${fullMatch.state} · ${fullMatch.distance_miles ?? '0'} MI</div>
+                <div class="chat-card-footer">
+                  <span>📞 ${fullMatch.phone || 'No phone listed'}</span>
+                  <span style="font-size: 10px; color: var(--text-dim);">PIPELINE: ${fullMatch.status.toUpperCase()}</span>
+                </div>
+              </div>
+            `;
+          });
+        }
+        if (log.tool === "explain_ranking" && log.result.scoring_factors) {
+          const res = log.result;
+          html += `
+            <div class="chat-card scoring-breakdown">
+              <div class="chat-card-title">${res.company_name} Index</div>
+              <div class="chat-card-meta">Formula Target Tier: ${res.priority_tier} (${res.priority_score} Pts)</div>
+              <div class="chat-card-body mono" style="font-size:11.5px; color: var(--text);">
+                <div class="breakdown-factor"><span>Distance Weight</span><span>${res.scoring_factors.distance_miles} mi</span></div>
+                <div class="breakdown-factor"><span>Directory Reviews</span><span>${res.scoring_factors.review_count} count</span></div>
+                <div class="breakdown-factor"><span>Star Rating</span><span>★ ${res.scoring_factors.rating}</span></div>
+              </div>
+            </div>
+          `;
+        }
+        if (log.tool === "draft_outreach" && log.result.context_for_draft) {
+          const res = log.result;
+          html += `
+            <div class="chat-card outreach-script">
+              <div class="chat-card-title">Action Script Draft</div>
+              <div class="chat-card-meta">CHANNEL: ${res.channel.toUpperCase()} · TO: ${res.company_name}</div>
+              <div class="chat-card-body"><strong>Opening Hook Strategy:</strong> ${res.context_for_draft.approach || 'Reference territory tier metrics.'}</div>
+              <div class="chat-card-script">"Hello Team ${res.company_name},\n\nI was looking over local GAF certified listings in your area and noticed your outstanding profile tier performance standing at ${res.context_for_draft.rating} stars..."</div>
+            </div>
+          `;
+        }
+      });
+    }
+    return html;
+  }
+
+  function appendAgentMessage(role, text, toolLogs = null) {
+    const wrap = document.getElementById("agent-messages");
+    const div = document.createElement("div");
+    
+    if (role === "assistant" && text === "Thinking…") {
+      div.className = "thinking-state";
+      div.innerHTML = `<span class="mono">▰ Analyzing matrix entries...</span>`;
+    } else {
+      div.className = `agent-msg ${role}`;
+      div.innerHTML = `<div class="bubble"></div>`;
+      if (role === "assistant") {
+        div.querySelector(".bubble").innerHTML = formatAssistantReply(text, toolLogs);
+      } else {
+        div.querySelector(".bubble").textContent = text;
+      }
+    }
+    
+    wrap.appendChild(div);
+    wrap.scrollTop = wrap.scrollHeight;
+    return div;
+  }
+
+  function appendSuggestions(afterEl, questions) {
+    const wrap = document.getElementById("agent-messages");
+    const row = document.createElement("div");
+    row.className = "agent-suggestions-inline";
+    row.innerHTML = questions.map(q => `<button class="agent-suggestion-chip">${q}</button>`).join("");
+    afterEl.insertAdjacentElement("afterend", row);
+    row.querySelectorAll(".agent-suggestion-chip").forEach(chip => {
+      chip.addEventListener("click", async () => {
+        row.remove();
+        let queryText = chip.textContent.trim();
+        document.getElementById("agent-input").value = queryText.replace("⚡ ", "");
+        sendAgentMessage();
+      });
+    });
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+
+  async function sendAgentMessage() {
+    const input = document.getElementById("agent-input");
+    const message = input.value.trim();
+    if (!message) return;
+    input.value = "";
+    appendAgentMessage("user", message);
+    agentHistory.push({ role: "user", content: message });
+
+    const thinking = appendAgentMessage("assistant", "Thinking…");
+
+    try {
+      const res = await fetch(`${API_BASE}/agent/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history: agentHistory.slice(0, -1) }),
+      });
+      const data = await res.json();
+      thinking.remove();
+      
+      const newMsg = appendAgentMessage("assistant", data.reply, data.tool_log);
+      agentHistory.push({ role: "assistant", content: data.reply });
+      
+      if (data.tool_log && data.tool_log.some(e => e.tool === "mark_lead_status" && e.result.confirmed)) {
+        loadLeads();
+      }
+      appendSuggestions(newMsg, SUGGESTIONS);
+    } catch (err) {
+      thinking.className = "agent-msg assistant";
+      thinking.innerHTML = `<div class="bubble">Communication loop drop. Is backend up?</div>`;
+    }
+  }
+
+  document.getElementById("theme-toggle").addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("roofintel-theme", next);
+    document.getElementById("theme-toggle").textContent = next === "dark" ? "🌙" : "☀️";
+  });
+
+  const savedTheme = localStorage.getItem("roofintel-theme") || "dark";
+  document.documentElement.setAttribute("data-theme", savedTheme);
+  document.getElementById("theme-toggle").textContent = savedTheme === "dark" ? "🌙" : "☀️";
+
+  document.getElementById("agent-send").addEventListener("click", sendAgentMessage);
+  document.getElementById("agent-input").addEventListener("keydown", (e) => { if (e.key === "Enter") sendAgentMessage(); });
+
+  const greeting = appendAgentMessage("assistant", "Hi, I'm your AI Sales Teammate. Ready to structure your account queues.");
+  appendSuggestions(greeting, SUGGESTIONS);
+  loadLeads();
+</script>
+</body>
+</html>
