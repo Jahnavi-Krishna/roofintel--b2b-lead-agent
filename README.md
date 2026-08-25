@@ -1,6 +1,6 @@
 <h1 align="center">RoofIntel</h1>
 <p align="center">A B2B lead intelligence agent for roofing distributors.</p>
-<p align="center"><sub>AI Case Study by Jahnavi Kunapareddy</sub></p>
+<p align="center"><sub>  · AI Case Study · By Jahnavi Kunapareddy</sub></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/Agent-tool--calling-orange" alt="Tool-calling agent">
